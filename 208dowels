@@ -1,0 +1,84 @@
+#! /usr/bin/env python3
+
+import sys
+
+EXIT_FAILURE = 84
+EXIT_SUCCESS = 0
+HELP_ARGUMENT = [['-h'], ['--help']]
+
+def exit_with_usage(binary_name, exit_value=EXIT_SUCCESS):
+    usage = [
+        'USAGE',
+        f'\t{binary_name} O1 O2 O3 O4 O5 O6',
+        '',
+        'DESCRIPTION',
+        '\tOi\tsize of the observed class',
+        ''
+    ]
+
+    sys.stderr.write('\n'.join(usage))
+    sys.exit(exit_value)
+
+
+def parse_argument(args):
+    if args[1:] in HELP_ARGUMENT:
+        exit_with_usage(args[0])
+    try:
+        assert len(args) == 7
+        O1 = int(args[1])
+        O2 = int(args[2])
+        O3 = int(args[3])
+        O4 = int(args[4])
+        O5 = int(args[5])
+        O6 = int(args[6])
+    except (AssertionError, IndexError, ValueError):
+        exit_with_usage(args[0], exit_value=EXIT_FAILURE)
+    return O1, O2, O3, O4, O5, O6
+
+
+def compute_data(O1, O2, O3, O4, O5, O6):
+    return ['x', 1, 2, 3, 4, 5, 6, 'Total'], ['Ox', 1, 2, 3, 4, 5, 6, 100], ['Tx', 1, 2, 3, 4, 5, 6, 100]
+
+
+def show_array(x, Ox, Tx):
+    title_spec = '>4'
+    def show_line(array, format_spec):
+        sys.stdout.write(f'{format(array[0], title_spec):8}')
+        for data in array[1:]:
+            sys.stdout.write(f'| {format(data, format_spec):<7}')
+        sys.stdout.write('\n')
+
+    show_line(x, '')
+    show_line(Ox, '.0f')
+    show_line(Tx, '.1f')
+
+
+def show_distribution(a):
+    sys.stdout.write('{:<26}B(100, {:.4f})\n'.format('Distribution:', a))
+
+
+def show_chi_squared(a):
+    sys.stdout.write('{:<26}{:.3f}\n'.format('Chi-squared:', a))
+
+
+def show_degrees_of_freedom(a):
+    sys.stdout.write('{:<26}{:.0f}\n'.format('Degrees of freedom:', a))
+
+
+def show_fit_validity(a):
+    sys.stdout.write('{:<26}{}\n'.format('Fit validity:', 1))
+
+
+def main(args):
+    O1, O2, O3, O4, O5, O6 = parse_argument(args)
+    x, Ox, Tx = compute_data(O1, O2, O3, O4, O5, O6)
+
+    show_array(x, Ox, Tx)
+    show_distribution(1)
+    show_chi_squared(1)
+    show_degrees_of_freedom(1)
+    show_fit_validity(1)
+
+if __name__ == '__main__':
+    main(sys.argv)
+    sys.exit(EXIT_SUCCESS)
